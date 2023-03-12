@@ -1,7 +1,15 @@
+import { useDispatch } from 'react-redux';
+import { changeFilter } from 'redux/sliceFilter';
 import PropTypes from 'prop-types';
 import css from './Styles/Filter.module.css';
 
-export const Filter = ({ value, onChange }) => {
+export const Filter = () => {
+  const dispatch = useDispatch();
+
+  const handleChangeFilter = e => {
+    dispatch(changeFilter(e.currentTarget.value));
+  };
+
   return (
     <div className={css.filter}>
       <label htmlFor="filter" className={css.filter__label}>
@@ -10,8 +18,7 @@ export const Filter = ({ value, onChange }) => {
       <input
         id="filter"
         type="text"
-        value={value}
-        onChange={onChange}
+        onChange={handleChangeFilter}
         className={css.filter__input}
       />
     </div>

@@ -1,29 +1,34 @@
-import { useState } from 'react';
+// import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { getContacts } from 'redux/selectors';
+import { addContact } from '../redux/sliceContacts';
 import css from './Styles/ContactForm.module.css';
 
-export const ContactForm = ({ onSubmit }) => {
-  const [name, setName] = useState('');
-  const [number, setNumber] = useState('');
+export const ContactForm = () => {
+  const dispatch = useDispatch();
+  const contacts = useSelector(getContacts);
 
-  const handleChange = e => {
-    const { name, value } = e.target;
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-      case 'number':
-        setNumber(value);
-        break;
-      default:
-        break;
+  const addNewContact = (name, number) => {
+    const condition = contacts.find(
+      contact => contact.name.toLowerCase() === name.toLowerCase()
+    );
+
+    if (condition) {
+      alert(`${name} is already in contacts!`);
+      return;
     }
+    const newContact = {
+      name: name,
+      number: number,
+    };
+    dispatch(addContact(newContact));
   };
 
   const handlerSubmit = e => {
     e.preventDefault();
-    onSubmit(name, number);
-    setName('');
-    setNumber('');
+    const form = e.target;
+    addNewContact(form.elements.name.value, form.elements.number.value);
+    form.reset();
   };
 
   return (
@@ -40,8 +45,6 @@ export const ContactForm = ({ onSubmit }) => {
             pattern="^[a-zA-Zа-яА-Я]+(([' -][a-zA-Zа-яА-Я ])?[a-zA-Zа-яА-Я]*)*$"
             title="Name may contain only letters, apostrophe, dash and spaces. For example Adrian, Jacob Mercer, Charles de Batz de Castelmore d'Artagnan"
             required
-            value={name}
-            onChange={handleChange}
             className={css.contactForm__input}
           />
         </div>
@@ -56,8 +59,6 @@ export const ContactForm = ({ onSubmit }) => {
             pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"
             title="Phone number must be digits and can contain spaces, dashes, parentheses and can start with +"
             required
-            value={number}
-            onChange={handleChange}
             className={css.contactForm__input}
           />
         </div>
